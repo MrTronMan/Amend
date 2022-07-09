@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -19,7 +20,7 @@ public final class Amend extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        Bukkit.getLogger().info("Amend is on standby, ready for updates on shutdown.");
+        getLogger().info("Amend is on standby, ready for updates on shutdown.");
 
     }
 
@@ -56,10 +57,23 @@ public final class Amend extends JavaPlugin {
                 Files.copy(in, Paths.get("purpur.jar"), StandardCopyOption.REPLACE_EXISTING);
                 Bukkit.getLogger().info("Update Completed!");
                 Bukkit.getLogger().warning("-------------------------------");
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getLogger().info("Successfully updated & disabled Amend!");
             } else {
                 Bukkit.getLogger().info("Server is up to date!");
                 Bukkit.getLogger().info("Closing plugin...");
                 Bukkit.getLogger().warning("-------------------------------");
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getLogger().info("Successfully disabled Amend!");
+
             }
         } catch (IOException e) {
             e.printStackTrace();
