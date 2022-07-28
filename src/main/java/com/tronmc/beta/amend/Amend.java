@@ -13,13 +13,25 @@ import java.util.concurrent.TimeUnit;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.jeff_media.updatechecker.UpdateCheckSource;
+import com.jeff_media.updatechecker.UpdateChecker;
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Amend extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        this.saveDefaultConfig();
+        FileConfiguration config = this.getConfig();
+        getConfig().set("config-version", 4);
+        saveConfig();
+
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/version/1.19") // A link to a URL that contains the latest version as String
+                .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
+                .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
+                .checkNow(); // And check right now
         getLogger().info("Amend is on standby, ready for updates on shutdown.");
 
     }
@@ -27,6 +39,10 @@ public final class Amend extends JavaPlugin {
     @Override
     public void onDisable() {
         Bukkit.getLogger().info("Started Update Check...");
+        reloadConfig();
+        this.getConfig();
+        FileConfiguration config = this.getConfig();
+        String serverJarName = this.getConfig().getString("jar-name");
         URLConnection connection = null;
         try {
             connection = new URL("https://api.purpurmc.org/v2/purpur/1.19").openConnection();
@@ -51,10 +67,10 @@ public final class Amend extends JavaPlugin {
             String simpleversion = BukkitVersion.substring(11,15);
             int version = Integer.parseInt(simpleversion);
             if (version != latest) {
-                Bukkit.getLogger().warning("Version is NOT up to date! Newest git-version is " + latest);
-                Bukkit.getLogger().info("Downloading update and applying to jar...");
+                Bukkit.getLogger().warning("Version is NOT up to date! Newest purpur version is " + latest);
+                Bukkit.getLogger().info("Downloading update and applying to " + serverJarName +  "...");
                 InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19/latest/download").openStream();
-                Files.copy(in, Paths.get("purpur.jar"), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                 Bukkit.getLogger().info("Update Completed!");
                 Bukkit.getLogger().warning("-------------------------------");
                 try {

@@ -4,4 +4,4 @@ main: com.tronmc.beta.amend.Amend
 api-version: 1.19
 load: STARTUP
 description: A plugin that auto updates purpur.
-website: https://beta.tronmc.com/projects/amend
+website: amend.mrtron.dev
