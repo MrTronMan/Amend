@@ -2,7 +2,7 @@
 
 
 # Amend 
-A plugin that auto updates purpur. (Only available for newest version as of now).
+A plugin that auto updates purpur to the newest version based on the Minecraft version.
  ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
