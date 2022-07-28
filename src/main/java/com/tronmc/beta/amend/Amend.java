@@ -69,16 +69,22 @@ public final class Amend extends JavaPlugin {
             if (version != latest) {
                 Bukkit.getLogger().warning("Version is NOT up to date! Newest purpur version is " + latest);
                 Bukkit.getLogger().info("Downloading update and applying to " + serverJarName +  "...");
-                InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19/latest/download").openStream();
-                Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
-                Bukkit.getLogger().info("Update Completed!");
-                Bukkit.getLogger().warning("-------------------------------");
-                try {
-                    TimeUnit.SECONDS.sleep(3);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if (serverJarName != ".jar" ) {
+                    getLogger().warning("The config value does not include .jar, please add the file extension.");
+                    getLogger().info("Updated Failed but successfully disabled Amend!");
+                    Bukkit.getLogger().warning("-------------------------------");
+                } else {
+                    InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19/latest/download").openStream();
+                    Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
+                    Bukkit.getLogger().info("Update Completed!");
+                    Bukkit.getLogger().warning("-------------------------------");
+                    try {
+                        TimeUnit.SECONDS.sleep(3);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    getLogger().info("Successfully updated and disabled Amend!");
                 }
-                getLogger().info("Successfully updated & disabled Amend!");
             } else {
                 Bukkit.getLogger().info("Server is up to date!");
                 Bukkit.getLogger().info("Closing plugin...");
