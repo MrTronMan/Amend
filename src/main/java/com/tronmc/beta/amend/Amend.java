@@ -25,10 +25,10 @@ public final class Amend extends JavaPlugin {
     public void onEnable() {
         this.saveDefaultConfig();
         FileConfiguration config = this.getConfig();
-        getConfig().set("config-version", 4);
+        getConfig().set("config-version", 6);
         saveConfig();
 
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/version/1.19") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/version/1.19.1") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -45,7 +45,7 @@ public final class Amend extends JavaPlugin {
         String serverJarName = this.getConfig().getString("jar-name");
         URLConnection connection = null;
         try {
-            connection = new URL("https://api.purpurmc.org/v2/purpur/1.19").openConnection();
+            connection = new URL("https://api.purpurmc.org/v2/purpur/1.19.1").openConnection();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -69,22 +69,16 @@ public final class Amend extends JavaPlugin {
             if (version != latest) {
                 Bukkit.getLogger().warning("Version is NOT up to date! Newest purpur version is " + latest);
                 Bukkit.getLogger().info("Downloading update and applying to " + serverJarName +  "...");
-                if (serverJarName != ".jar" ) {
-                    getLogger().warning("The config value does not include .jar, please add the file extension.");
-                    getLogger().info("Updated Failed but successfully disabled Amend!");
-                    Bukkit.getLogger().warning("-------------------------------");
-                } else {
-                    InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19/latest/download").openStream();
-                    Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
-                    Bukkit.getLogger().info("Update Completed!");
-                    Bukkit.getLogger().warning("-------------------------------");
-                    try {
-                        TimeUnit.SECONDS.sleep(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    getLogger().info("Successfully updated and disabled Amend!");
+                InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19.1/latest/download").openStream();
+                Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
+                Bukkit.getLogger().info("Update Completed!");
+                Bukkit.getLogger().warning("-------------------------------");
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+                getLogger().info("Successfully updated and disabled Amend!");
             } else {
                 Bukkit.getLogger().info("Server is up to date!");
                 Bukkit.getLogger().info("Closing plugin...");
