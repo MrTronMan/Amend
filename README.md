@@ -1,7 +1,12 @@
-# Amend
- A plugin that auto updates purpur. (Only available for newest version as of now).
+<img src="https://amend.mrtron.dev/img/amend.png" width="500px">
+
+
+# Amend 
+A plugin that auto updates purpur. (Only available for newest version as of now).
+ ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
+ *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
- ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK.
+ 
  # How to make it work
  Currently **IT ONLY UPDATES PURPUR, NOT ANYTHING ELSE**.
  It grabs the latest version from Purpur's API and just replaces the server jar.
