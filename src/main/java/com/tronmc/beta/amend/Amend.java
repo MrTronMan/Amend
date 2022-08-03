@@ -25,10 +25,10 @@ public final class Amend extends JavaPlugin {
     public void onEnable() {
         this.saveDefaultConfig();
         FileConfiguration config = this.getConfig();
-        getConfig().set("config-version", 6);
+        getConfig().set("config-version", 7);
         saveConfig();
 
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/version/1.19.1") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.19.1") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
