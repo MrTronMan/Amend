@@ -1,4 +1,4 @@
-<img src="https://amend.mrtron.dev/img/amend.png" width="500px">
+<img src="https://amend.mrtron.dev/images/amendlight.png" width="500px">
 
 
 # Amend 
@@ -6,6 +6,9 @@ A plugin that auto updates purpur to the newest version based on the Minecraft v
  ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
+# Download
+
+Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
  
  # How to make it work
  Currently **IT ONLY UPDATES PURPUR, NOT ANYTHING ELSE**.
