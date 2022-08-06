@@ -1,11 +1,13 @@
-<img src="https://amend.mrtron.dev/img/amend.png" width="500px">
+![](https://amend.mrtron.dev/images/amendfullcolor.png)
 
-
-# Amend 
+# Amend
 A plugin that auto updates purpur to the newest version based on the Minecraft version.
  ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
+# Download
+
+Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
  
  # How to make it work
  Currently **IT ONLY UPDATES PURPUR, NOT ANYTHING ELSE**.
@@ -28,7 +30,7 @@ jar-name: {PUT THE JAR FILE NAME HERE WITH THE .JAR}
 
 
 # Config Version. Like every spigot dev, we ask that you DO NOT CHANGE THIS PLEASE.
-config-version: 6
+config-version: 7
 ```
  - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.19.1` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
  
