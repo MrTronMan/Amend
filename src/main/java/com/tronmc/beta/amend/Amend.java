@@ -28,7 +28,7 @@ public final class Amend extends JavaPlugin {
         getConfig().set("config-version", 7);
         saveConfig();
 
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.19.1") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.19.2") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -45,11 +45,11 @@ public final class Amend extends JavaPlugin {
         String serverJarName = this.getConfig().getString("jar-name");
         URLConnection connection = null;
         try {
-            connection = new URL("https://api.purpurmc.org/v2/purpur/1.19.1").openConnection();
+            connection = new URL("https://api.purpurmc.org/v2/purpur/1.19.2").openConnection();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        try(Scanner scanner = new Scanner(connection.getInputStream());){
+        try(Scanner scanner = new Scanner(connection.getInputStream())){
             String response = scanner.useDelimiter("\\A").next();
             JsonObject jobj = new Gson().fromJson(response, JsonObject.class);
             String allbuilds = jobj.get("builds").toString();

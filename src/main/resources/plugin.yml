@@ -2,6 +2,7 @@ name: Amend
 version: '${project.version}'
 main: com.tronmc.beta.amend.Amend
 api-version: 1.19
-load: STARTUP
+load: POSTWORLD
 description: A plugin that auto updates purpur.
 website: amend.mrtron.dev
+author: MrTron
