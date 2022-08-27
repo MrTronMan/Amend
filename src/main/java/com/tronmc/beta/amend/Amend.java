@@ -59,7 +59,6 @@ public final class Amend extends JavaPlugin {
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
         getLogger().info("Amend is on standby, ready for updates on shutdown.");
-        getLogger().warning("This is a dev version and is not ready for launch. THERE WILL BE BUGS!");
 
     }
 
