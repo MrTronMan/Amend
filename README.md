@@ -24,13 +24,18 @@ Currently as of now you can download it on our new website @ [amend.mrtron.dev/d
 #    ┃╭━╮┃┃┃┃┃━┫┃┃┃╰╯┃
 #    ╰╯╱╰┻┻┻┻━━┻╯╰┻━━╯
 
+# --WHEN EDITING THIS CONFIG WHILE THE SERVER IS ON, DO NOT WORRY AS THE CONFIG REFRESHES TO SEE THE CHANGES YOU MADE.--
+
 # This changes the jar file name. PLEASE MAKE SURE IT MATCHES THE JAR FILE NAME OR ELSE IT WILL CREATE A NEW JAR FILE.
 # If you forget you are using a different server type instead of Purpur and the plugin is running, it will automatically override it to purpur.
-jar-name: {PUT THE JAR FILE NAME HERE WITH THE .JAR}
+jar-name: "server.jar"
 
+# This how you can customize the type of server you would like. It is defaulted to "purpur".
+# The current options for selecting the server jar are "purpur" or "paper".
+server-type: "purpur"
 
 # Config Version. Like every spigot dev, we ask that you DO NOT CHANGE THIS PLEASE.
-config-version: 7
+config-version: 8
 ```
  - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.19.2` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
  
