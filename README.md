@@ -10,11 +10,11 @@ A plugin that auto updates purpur to the newest version based on the Minecraft v
 Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
  
  # How to make it work
- Currently **IT ONLY UPDATES PURPUR, NOT ANYTHING ELSE**.
- It grabs the latest version from Purpur's API and just replaces the server jar.
+ You can use either **paper** or **purpur**.
+ It grabs the latest version from our API and just replaces the server jar.
  
  If you would like to use it there are a few things you need to do. 
- - First make sure purpur is installed and name the jar to whatever you'd like. Please make sure to change it in the config though, so the system can find your jar file.
+ - First make sure purpur/paper is installed and name the jar to whatever you'd like. Please make sure to change it in the config though, so the system can find your jar file.
  ```yml
 #
 #    ╭━━━╮╱╱╱╱╱╱╱╱╱╱╭╮
