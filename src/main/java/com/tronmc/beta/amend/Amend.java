@@ -69,7 +69,7 @@ public final class Amend extends JavaPlugin {
             if (version != latest) {
                 Bukkit.getLogger().warning("Version is NOT up to date! Newest purpur version is " + latest);
                 Bukkit.getLogger().info("Downloading update and applying to " + serverJarName +  "...");
-                InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19.1/latest/download").openStream();
+                InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.19.2/latest/download").openStream();
                 Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                 Bukkit.getLogger().info("Update Completed!");
                 Bukkit.getLogger().warning("-------------------------------");
