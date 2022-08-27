@@ -46,7 +46,7 @@ public final class Amend extends JavaPlugin {
             getLogger().warning("Woah! Your config version is higher then it is supposed to!");
             getLogger().warning("We recommend that you change the config version to 7 so it automatically updates.");
         }
-            //Timeout so user sees message.
+        //Timeout so user sees message.
         try {
             TimeUnit.SECONDS.sleep(3);
         } catch (InterruptedException e) {
