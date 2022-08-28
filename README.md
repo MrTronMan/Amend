@@ -1,7 +1,7 @@
 ![](https://amend.mrtron.dev/images/amendfullcolor.png)
 
 # Amend
-A plugin that auto updates purpur to the newest version based on the Minecraft version.
+A plugin that auto updates **paper** or **purpur** to the newest version based on the Minecraft version.
  ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
@@ -30,9 +30,9 @@ Currently as of now you can download it on our new website @ [amend.mrtron.dev/d
 # If you forget you are using a different server type instead of Purpur and the plugin is running, it will automatically override it to purpur.
 jar-name: "server.jar"
 
-# This how you can customize the type of server you would like. It is defaulted to "purpur".
+# This how you can customize the type of server you would like. It is defaulted to "paper".
 # The current options for selecting the server jar are "purpur" or "paper".
-server-type: "purpur"
+server-type: "paper"
 
 # Config Version. Like every spigot dev, we ask that you DO NOT CHANGE THIS PLEASE.
 config-version: 8

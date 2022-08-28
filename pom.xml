@@ -6,11 +6,11 @@
 
     <groupId>com.tronmc.beta</groupId>
     <artifactId>Amend</artifactId>
-    <version>1.4--V.1.19.2</version>
+    <version>1.4.1--V.1.19.2</version>
     <packaging>jar</packaging>
     <name>Amend</name>
 
-    <description>A plugin that auto updates purpur.</description>
+    <description>A plugin that auto updates paper or purpur to the newest version based on the Minecraft version.</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -38,6 +38,10 @@
                         <!-- Replace "your.package" with your plugin's package name -->
                         <relocation>
                             <pattern>com.jeff_media.updatechecker</pattern>
+                            <shadedPattern>com.tronmc.beta.amend</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
                             <shadedPattern>com.tronmc.beta.amend</shadedPattern>
                         </relocation>
                     </relocations>
@@ -92,6 +96,12 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.0</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

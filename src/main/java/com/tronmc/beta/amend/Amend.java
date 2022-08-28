@@ -15,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -58,6 +59,8 @@ public final class Amend extends JavaPlugin {
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
+        int pluginId = 16293;
+        Metrics metrics = new Metrics(this, pluginId);
         getLogger().info("Amend is on standby, ready for updates on shutdown.");
 
     }
@@ -66,7 +69,6 @@ public final class Amend extends JavaPlugin {
     public void onDisable() {
         Bukkit.getLogger().info("Started Update Check...");
         String BukkitVersion = Bukkit.getVersion().toString();
-        Bukkit.getLogger().info("Current Version: " + BukkitVersion.substring(11));
         String MCVersion = " (MC: 1.19.2)";
         String editVersion = BukkitVersion.replace(MCVersion, "");
         String simpleversion = editVersion.replaceAll("\\D+","");
@@ -95,6 +97,7 @@ public final class Amend extends JavaPlugin {
                 Bukkit.getLogger().warning("-------------------------------");
                 Bukkit.getLogger().info("Amend");
                 Bukkit.getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                Bukkit.getLogger().info("Current Version: " + BukkitVersion.substring(11));
 
                 //If the version is not up-to-date it will grab the latest version and download and replace the file and name it based
                 //on the config.
@@ -127,7 +130,7 @@ public final class Amend extends JavaPlugin {
                 e.printStackTrace();
             }
         }
-        if (ServerType.equals("purpur")) {
+        else if (ServerType.equals("purpur")) {
             URLConnection connection = null;
             try {
                 connection = new URL("https://api.purpurmc.org/v2/purpur/1.19.2").openConnection();
@@ -148,6 +151,7 @@ public final class Amend extends JavaPlugin {
                 Bukkit.getLogger().warning("-------------------------------");
                 Bukkit.getLogger().info("Amend");
                 Bukkit.getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                Bukkit.getLogger().info("Current Version: " + BukkitVersion.substring(11));
 
                 //If the version is not up-to-date it will grab the latest version and download and replace the file and name it based
                 //on the config.
@@ -179,6 +183,14 @@ public final class Amend extends JavaPlugin {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            Bukkit.getLogger().warning("-------------------------------");
+            Bukkit.getLogger().info("Amend");
+            Bukkit.getLogger().info("ERROR: Invalid Server Type! Please check the config.");
+            Bukkit.getLogger().info("Current Version: " + BukkitVersion.substring(11));
+            Bukkit.getLogger().info("Closing plugin...");
+            Bukkit.getLogger().warning("-------------------------------");
+            getLogger().info("Successfully disabled Amend!");
         }
 
 
