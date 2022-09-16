@@ -9,7 +9,7 @@
 # --WHEN EDITING THIS CONFIG WHILE THE SERVER IS ON, DO NOT WORRY AS THE CONFIG REFRESHES TO SEE THE CHANGES YOU MADE.--
 
 # This changes the jar file name. PLEASE MAKE SURE IT MATCHES THE JAR FILE NAME OR ELSE IT WILL CREATE A NEW JAR FILE.
-# If you forget you are using a different server type instead of Purpur and the plugin is running, it will automatically override it to purpur.
+# Also make sure to include ".jar".
 jar-name: "server.jar"
 
 # This how you can customize the type of server you would like. It is defaulted to "paper".
