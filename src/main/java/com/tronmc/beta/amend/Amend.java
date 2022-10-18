@@ -26,7 +26,7 @@ public final class Amend extends JavaPlugin {
     public void onEnable() {
         Integer configcheck = this.getConfig().getInt("config-version");
         //If the integer in the config is less than the config number (old) then it will rename the old one and create a fresh one.
-        if (configcheck < 9) {
+        if (configcheck < 8) {
             File config = new File(this.getDataFolder(), "config.yml");
             File oldconfig = new File(this.getDataFolder(), "config_1.4.1.yml");
             boolean configFlag = config.renameTo(oldconfig);
@@ -50,7 +50,7 @@ public final class Amend extends JavaPlugin {
             }
 
             //If the config is = to the config number (newest) then just leave the config alone.
-        } else if (configcheck == 9) {
+        } else if (configcheck == 8) {
             File config = new File(this.getDataFolder(), "config.yml");
             if (!config.exists()) {
                 getLogger().warning("Hey! Welcome to Amend! CHECK OUT THE CONFIG!");
@@ -63,7 +63,7 @@ public final class Amend extends JavaPlugin {
             this.saveDefaultConfig();
 
             //If the config is greater than the config number (n/a) then warn the user to change the config number to one lower.
-        } else if (configcheck > 9) {
+        } else if (configcheck > 8) {
             this.saveDefaultConfig();
             FileConfiguration config = this.getConfig();
             getLogger().warning("Woah! Your config version is higher then it is supposed to!");
