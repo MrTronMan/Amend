@@ -2,7 +2,7 @@
 
 # Amend
 A plugin that auto updates **paper** or **purpur** to the newest version based on the Minecraft version.
- ## HOT-SWAPPING JARS IS NOT THE BEST IDEA, PLEASE USE AT YOUR OWN RISK. 
+ ### The plugin updates your server right before shutdown and has a SUPER LOW CHANCE of causing any problems, but just incase please use at your own risk. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
  
 # Download
