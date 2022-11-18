@@ -55,6 +55,12 @@ public final class Amend extends JavaPlugin {
             File config = new File(getDataFolder(), "config.yml");
             if (!config.exists()) {
                 getLogger().warning("Hey! Welcome to Amend! Check out the config!");
+               //Times out so user can see the message.
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             saveDefaultConfig();
 
@@ -120,6 +126,9 @@ public final class Amend extends JavaPlugin {
                     getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
                     getLogger().info("Current Version: " + BukkitVersion.substring(11));
 
+                    //===========================
+                    //PAPER VERSION OF UPDATER
+                    //===========================
                     //If the version is not up-to-date it will grab the latest version and download and replace the file and name it based
                     //on the config.
                     if (version != latest) {
@@ -173,6 +182,9 @@ public final class Amend extends JavaPlugin {
                     getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
                     getLogger().info("Current Version: " + BukkitVersion.substring(11));
 
+                    //===========================
+                    //PURPUR VERSION OF UPDATER
+                    //===========================
                     //If the version is not up-to-date it will grab the latest version and download and replace the file and name it based
                     //on the config.
                     if (version != latest) {
@@ -205,7 +217,13 @@ public final class Amend extends JavaPlugin {
                 getLogger().warning("Current Version: " + BukkitVersion.substring(11));
                 getLogger().warning("Closing plugin...");
                 getLogger().warning("-------------------------------");
-                getLogger().warning("Successfully disabled Amend!");
+                //Time out so user sees the error message.
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getLogger().info("Successfully disabled Amend!");
                 getServer().getPluginManager().disablePlugin(this);
             }
         } else {
@@ -216,7 +234,13 @@ public final class Amend extends JavaPlugin {
             getLogger().warning("Plugin Version: " + "1.19.2");
             getLogger().warning("Closing plugin...");
             getLogger().warning("-------------------------------");
-            getLogger().warning("Successfully disabled Amend!");
+            //Time out so user sees the error message.
+            try {
+                TimeUnit.SECONDS.sleep(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            getLogger().info("Successfully disabled Amend!");
             getServer().getPluginManager().disablePlugin(this);
         }
     }
