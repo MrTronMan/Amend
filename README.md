@@ -40,4 +40,4 @@ config-version: 8
  - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.19.3` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
  
  Update checks for the plugin are currently unavailable to switch off, but we only create the update notification if its a critical update, not a fancy one.
- ###### © 2022 mrtron.dev. All Rights Reserved.
+ ###### © 2023 mrtron.dev. All Rights Reserved.
