@@ -173,13 +173,7 @@ public final class Amend extends JavaPlugin {
                     JsonObject jsonbuilds = new Gson().fromJson(allbuilds, JsonObject.class);
                     String complatest = jsonbuilds.get("latest").toString();
                     String simpleLatest = complatest.substring(1, 5);
-                    //LOG
-                    System.out.println(simpleLatest);
                     int latest = Integer.parseInt(simpleLatest);
-                    //LOG
-                    System.out.println(latest);
-                    //LOG
-                    System.out.println(version);
                     String[] pathNames;
                     File ServerJar = new File("../");
                     pathNames = ServerJar.list();
