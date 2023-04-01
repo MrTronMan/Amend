@@ -79,7 +79,7 @@ public final class Amend extends JavaPlugin {
         }
 
         //Update Checker that checks our API for the latest using a handy dependency called SpigotUpdateChecker.
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.19.3") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.19.4") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -92,7 +92,7 @@ public final class Amend extends JavaPlugin {
     public void onDisable() {
         getLogger().info("Started Update Check...");
         String BukkitVersion = Bukkit.getVersion().toString();
-        String MCVersion = " (MC: 1.19.3)";
+        String MCVersion = " (MC: 1.19.4)";
         String editVersion = BukkitVersion.replace(MCVersion, "");
         String simpleversion = editVersion.replaceAll("\\D+","");
         int version = Integer.parseInt(simpleversion);
@@ -124,7 +124,7 @@ public final class Amend extends JavaPlugin {
                     getLogger().warning("-------------------------------");
                     getLogger().info("Amend");
                     getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
-                    getLogger().info("Current Version: " + BukkitVersion.substring(11));
+                    getLogger().info("Current Version: " + BukkitVersion.substring(10));
 
                     //===========================
                     //PAPER VERSION OF UPDATER
@@ -173,7 +173,13 @@ public final class Amend extends JavaPlugin {
                     JsonObject jsonbuilds = new Gson().fromJson(allbuilds, JsonObject.class);
                     String complatest = jsonbuilds.get("latest").toString();
                     String simpleLatest = complatest.substring(1, 5);
+                    //LOG
+                    System.out.println(simpleLatest);
                     int latest = Integer.parseInt(simpleLatest);
+                    //LOG
+                    System.out.println(latest);
+                    //LOG
+                    System.out.println(version);
                     String[] pathNames;
                     File ServerJar = new File("../");
                     pathNames = ServerJar.list();
@@ -230,7 +236,7 @@ public final class Amend extends JavaPlugin {
             getLogger().warning("-------------------------------");
             getLogger().warning("Amend");
             getLogger().warning("ERROR: Your server version is older/newer, to prevent accidental updates to the world, amend will shut down.");
-            getLogger().warning("Current Version: " + BukkitVersion.substring(10));
+            getLogger().warning("Current Version: " + BukkitVersion.substring(11));
             getLogger().warning("Plugin Version: " + "1.19.4");
             getLogger().warning("Closing plugin...");
             getLogger().warning("-------------------------------");
