@@ -6,7 +6,7 @@
 
     <groupId>com.tronmc.beta</groupId>
     <artifactId>Amend</artifactId>
-    <version>1.6.1--V.1.19.4</version>
+    <version>1.7--V.1.20</version>
     <packaging>jar</packaging>
     <name>Amend</name>
 
@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19.1-R0.1-SNAPSHOT</version>
+            <version>1.20-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
