@@ -79,7 +79,7 @@ public final class Amend extends JavaPlugin {
         }
 
         //Update Checker that checks our API for the latest using a handy dependency called SpigotUpdateChecker.
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.20.4") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.20.6") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -92,7 +92,7 @@ public final class Amend extends JavaPlugin {
     public void onDisable() {
         getLogger().info("Started Update Check...");
         String BukkitVersion = Bukkit.getVersion().toString();
-        String MCVersion = " (MC: 1.20.4)";
+        String MCVersion = " (MC: 1.20.6)";
         String editVersion = BukkitVersion.replace(MCVersion, "");
         String simpleversion = editVersion.replaceAll("\\D+","");
         int version = Integer.parseInt(simpleversion);
@@ -106,12 +106,12 @@ public final class Amend extends JavaPlugin {
         //Boolean ForcedUpdate = this.getConfig().getBoolean("force-update");
         int start = BukkitVersion.indexOf("MC: ") + 4;
         int end = BukkitVersion.length() - 1;
-        if (BukkitVersion.substring(start, end).equals("1.20.4")) {
+        if (BukkitVersion.substring(start, end).equals("1.20.6")) {
 
             if (ServerType.equals("paper")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.20.4").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.20.6").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -134,7 +134,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PAPER version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.papermc.io/v2/projects/paper/versions/1.20.4/builds/" + response + "/downloads/paper-1.20.4-" + response + ".jar").openStream();
+                        InputStream in = new URL("https://api.papermc.io/v2/projects/paper/versions/1.20.6/builds/" + response + "/downloads/paper-1.20.6-" + response + ".jar").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
@@ -162,7 +162,7 @@ public final class Amend extends JavaPlugin {
             } else if (ServerType.equals("purpur")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.purpurmc.org/v2/purpur/1.20.4").openConnection();
+                    connection = new URL("https://api.purpurmc.org/v2/purpur/1.20.6").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -190,7 +190,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PURPUR version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.20.4/latest/download").openStream();
+                        InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.20.6/latest/download").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
@@ -231,7 +231,7 @@ public final class Amend extends JavaPlugin {
             getLogger().warning("Amend");
             getLogger().warning("ERROR: Your server version is older/newer, to prevent accidental updates to the world, amend will shut down.");
             getLogger().warning("Current Version: " + BukkitVersion.substring(11));
-            getLogger().warning("Plugin Version: " + "1.20.4");
+            getLogger().warning("Plugin Version: " + "1.20.6");
             getLogger().warning("Closing plugin...");
             getLogger().warning("-------------------------------");
             //Time out so user sees the error message.
