@@ -15,7 +15,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -69,7 +68,7 @@ public final class Amend extends JavaPlugin {
             this.saveDefaultConfig();
             FileConfiguration config = this.getConfig();
             getLogger().warning("Woah! Your config version is higher then it is supposed to!");
-            getLogger().warning("We recommend that you change the config version to 7 so it automatically updates.");
+            getLogger().warning("We recommend that you set the config version to 7 so it automatically updates.");
             //Timeout so user sees message.
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -91,11 +90,18 @@ public final class Amend extends JavaPlugin {
     @Override
     public void onDisable() {
         getLogger().info("Started Update Check...");
+
+        //Plugin Version
+        String pluginVersion = "1.20.6";
+
+        //Changes the Bukkit Version to a string and then gets the jar version and the MC version.
         String BukkitVersion = Bukkit.getVersion().toString();
-        String MCVersion = " (MC: 1.20.6)";
-        String editVersion = BukkitVersion.replace(MCVersion, "");
-        String simpleversion = editVersion.replaceAll("\\D+","");
-        int version = Integer.parseInt(simpleversion);
+        String MCandVersion = BukkitVersion.substring(0, BukkitVersion.lastIndexOf("-"));
+        String jarVersion = MCandVersion.substring(MCandVersion.indexOf("-") + 1);;
+        String MCVersion = MCandVersion.substring(0, MCandVersion.lastIndexOf("-"));
+        int version = Integer.parseInt(jarVersion);
+
+
 
         //Double Check if the user made any changes that the config will be the correct way by refreshing.
         reloadConfig();
@@ -104,9 +110,8 @@ public final class Amend extends JavaPlugin {
         String serverJarName = getConfig().getString("jar-name");
         String ServerType = getConfig().getString("server-type");
         //Boolean ForcedUpdate = this.getConfig().getBoolean("force-update");
-        int start = BukkitVersion.indexOf("MC: ") + 4;
-        int end = BukkitVersion.length() - 1;
-        if (BukkitVersion.substring(start, end).equals("1.20.6")) {
+
+        if (MCVersion.equals("1.20.6")) {
 
             if (ServerType.equals("paper")) {
                 URLConnection connection = null;
@@ -124,7 +129,7 @@ public final class Amend extends JavaPlugin {
                     getLogger().warning("-------------------------------");
                     getLogger().info("Amend");
                     getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
-                    getLogger().info("Current Version: " + BukkitVersion.substring(10));
+                    getLogger().info("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
 
                     //===========================
                     //PAPER VERSION OF UPDATER
@@ -180,7 +185,7 @@ public final class Amend extends JavaPlugin {
                     getLogger().warning("-------------------------------");
                     getLogger().info("Amend");
                     getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
-                    getLogger().info("Current Version: " + BukkitVersion.substring(11));
+                    getLogger().info("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
 
                     //===========================
                     //PURPUR VERSION OF UPDATER
@@ -214,7 +219,7 @@ public final class Amend extends JavaPlugin {
                 getLogger().warning("-------------------------------");
                 getLogger().warning("Amend");
                 getLogger().warning("ERROR: Invalid Server Type! Please check the config.");
-                getLogger().warning("Current Version: " + BukkitVersion.substring(11));
+                getLogger().warning("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
                 getLogger().warning("Closing plugin...");
                 getLogger().warning("-------------------------------");
                 //Time out so user sees the error message.
@@ -230,8 +235,8 @@ public final class Amend extends JavaPlugin {
             getLogger().warning("-------------------------------");
             getLogger().warning("Amend");
             getLogger().warning("ERROR: Your server version is older/newer, to prevent accidental updates to the world, amend will shut down.");
-            getLogger().warning("Current Version: " + BukkitVersion.substring(11));
-            getLogger().warning("Plugin Version: " + "1.20.6");
+            getLogger().warning("Your Server Version: " + MCVersion);
+            getLogger().warning("Plugin Version: " + pluginVersion);
             getLogger().warning("Closing plugin...");
             getLogger().warning("-------------------------------");
             //Time out so user sees the error message.
