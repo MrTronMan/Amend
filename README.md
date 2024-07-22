@@ -4,16 +4,17 @@
 A plugin that auto updates **paper** or **purpur** to the newest version based on the Minecraft version.
  ### The plugin updates your server right before shutdown and has a SUPER LOW CHANCE of causing any problems, but just incase please use at your own risk. 
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
+
+# Download
+Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
+
 # Windows
 **Windows is NOT fully supported**, this is because of the way Windows handles files compared to Linux. If you would like to use this on Windows, **the only support Amend has is through Crafty's Executable URL**.
 You can place `https://api.tronmc.com/amend/versions/(SERVER TYPE HERE)/1.21/download/` into the executable URL and click **`Update Executable`** to download the latest version of the server jar.
 
 ![](https://cdn.tronmc.com/img/git/crafty_update.png)
 
-# Download
 
-Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
- 
  # How to make it work
  You can use either **paper** or **purpur**.
  It grabs the latest version from our API and just replaces the server jar.
