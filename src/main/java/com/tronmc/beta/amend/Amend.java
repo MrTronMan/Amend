@@ -139,7 +139,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PAPER version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.papermc.io/v2/projects/paper/versions/1.21/builds/" + response + "/downloads/paper-1.21-" + response + ".jar").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/paper/1.21/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
@@ -167,18 +167,13 @@ public final class Amend extends JavaPlugin {
             } else if (ServerType.equals("purpur")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.purpurmc.org/v2/purpur/1.21").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/purpur/1.21").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 try (Scanner scanner = new Scanner(connection.getInputStream())) {
                     String response = scanner.useDelimiter("\\A").next();
-                    JsonObject jobj = new Gson().fromJson(response, JsonObject.class);
-                    String allbuilds = jobj.get("builds").toString();
-                    JsonObject jsonbuilds = new Gson().fromJson(allbuilds, JsonObject.class);
-                    String complatest = jsonbuilds.get("latest").toString();
-                    String simpleLatest = complatest.substring(1, 5);
-                    int latest = Integer.parseInt(simpleLatest);
+                    int latest = Integer.parseInt(response);
                     String[] pathNames;
                     File ServerJar = new File("../");
                     pathNames = ServerJar.list();
@@ -195,7 +190,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PURPUR version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.purpurmc.org/v2/purpur/1.21/latest/download").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/purpur/1.21/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
