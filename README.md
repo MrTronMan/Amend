@@ -10,7 +10,7 @@ Currently as of now you can download it on our new website @ [amend.mrtron.dev/d
 
 # Windows
 **Windows is NOT fully supported**, this is because of the way Windows handles files compared to Linux. If you would like to use this on Windows, **the only support Amend has is through Crafty's Executable URL**.
-You can place `https://api.tronmc.com/amend/versions/(SERVER TYPE HERE)/1.21/download/` into the executable URL and click **`Update Executable`** to download the latest version of the server jar.
+You can place `https://api.tronmc.com/amend/versions/(SERVER TYPE HERE)/1.21.1/download/` into the executable URL and click **`Update Executable`** to download the latest version of the server jar.
 
 ![](https://cdn.tronmc.com/img/git/crafty_update.png)
 
@@ -43,7 +43,7 @@ server-type: "paper"
 # Config Version. Like every spigot dev, we ask that you DO NOT CHANGE THIS PLEASE.
 config-version: 8
 ```
- - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.21` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
+ - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.21.1` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
  
  Update checks for the plugin are currently unavailable to switch off, but we only create the update notification if its a critical update, not a fancy one.
  ###### © 2024 mrtron.dev. All Rights Reserved.
