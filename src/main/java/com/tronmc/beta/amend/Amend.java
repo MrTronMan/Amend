@@ -11,8 +11,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.jeff_media.updatechecker.UpdateCheckSource;
 import com.jeff_media.updatechecker.UpdateChecker;
 import org.bstats.bukkit.Metrics;
@@ -26,9 +24,9 @@ public final class Amend extends JavaPlugin {
     public void onEnable() {
         Integer configcheck = getConfig().getInt("config-version");
         //If the integer in the config is less than the config number (old) then it will rename the old one and create a fresh one.
-        if (configcheck < 8) {
+        if (configcheck < 9) {
             File config = new File(getDataFolder(), "config.yml");
-            File oldconfig = new File(getDataFolder(), "config_1.4.1.yml");
+            File oldconfig = new File(getDataFolder(), "config_1.8.0.yml");
             boolean configFlag = config.renameTo(oldconfig);
             this.saveDefaultConfig();
             if (configFlag) {
@@ -50,7 +48,7 @@ public final class Amend extends JavaPlugin {
             }
 
             //If the config is = to the config number (newest) then just leave the config alone.
-        } else if (configcheck == 8) {
+        } else if (configcheck == 9) {
             File config = new File(getDataFolder(), "config.yml");
             if (!config.exists()) {
                 getLogger().warning("Hey! Welcome to Amend! Check out the config!");
@@ -64,11 +62,11 @@ public final class Amend extends JavaPlugin {
             saveDefaultConfig();
 
             //If the config is greater than the config number (n/a) then warn the user to change the config number to one lower.
-        } else if (configcheck > 8) {
+        } else if (configcheck > 9) {
             this.saveDefaultConfig();
             FileConfiguration config = this.getConfig();
             getLogger().warning("Woah! Your config version is higher then it is supposed to!");
-            getLogger().warning("We recommend that you set the config version to 7 so it automatically updates.");
+            getLogger().warning("We recommend that you set the config version to 8 so it automatically updates.");
             //Timeout so user sees message.
             try {
                 TimeUnit.SECONDS.sleep(3);
@@ -95,12 +93,11 @@ public final class Amend extends JavaPlugin {
         String pluginVersion = "1.21.4";
 
         //Changes the Bukkit Version to a string and then gets the jar version and the MC version.
+        String AUTOseverType = Bukkit.getServer().getName();
         String BukkitVersion = Bukkit.getVersion().toString();
         String MCandVersion = BukkitVersion.substring(0, BukkitVersion.lastIndexOf("-"));
         String jarVersion = MCandVersion.substring(MCandVersion.indexOf("-") + 1);;
         String MCVersion = MCandVersion.substring(0, MCandVersion.lastIndexOf("-"));
-        int version = Integer.parseInt(jarVersion);
-
 
 
         //Double Check if the user made any changes that the config will be the correct way by refreshing.
@@ -111,7 +108,44 @@ public final class Amend extends JavaPlugin {
         String ServerType = getConfig().getString("server-type");
         //Boolean ForcedUpdate = this.getConfig().getBoolean("force-update");
 
+        //the AUTO setting
+        if (ServerType.equals("AUTO")) {
+            getLogger().info("AUTO is enabled, checking server type...");
+
+            if (AUTOseverType.equals("Paper")) {
+                getLogger().info("AUTO detected: " + AUTOseverType);
+                ServerType = "paper";
+            } else if (AUTOseverType.equals("Purpur")) {
+                getLogger().info("AUTO detected: " + AUTOseverType);
+                ServerType = "purpur";
+            } else {
+                getLogger().warning("-------------------------------");
+                getLogger().warning("Amend");
+                getLogger().warning("ERROR: AUTO detected a server type that is invalid! Please check the version/force a server type in config.");
+                getLogger().warning("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
+                getLogger().warning("Plugin Version: " + pluginVersion);
+                getLogger().warning("Server Type Detected: " + AUTOseverType);
+                getLogger().warning("Closing plugin...");
+                getLogger().warning("-------------------------------");
+                //Time out so user sees the error message.
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                getLogger().info("Successfully disabled Amend!");
+                getServer().getPluginManager().disablePlugin(this);
+            }
+        }
+
         if (MCVersion.equals("1.21.4")) {
+
+            //Converts the jar version to an integer for comparsion
+            //moved this because some servers have a different versioning system (ex. Spigot) and would run into an exception before
+            //auto could recognize the server type.
+            //so moving this here makes it check if its paper or purpur first and not cause an exception
+            int version = Integer.parseInt(jarVersion);
+
 
             if (ServerType.equals("paper")) {
                 URLConnection connection = null;
@@ -128,7 +162,11 @@ public final class Amend extends JavaPlugin {
                     pathNames = ServerJar.list();
                     getLogger().warning("-------------------------------");
                     getLogger().info("Amend");
-                    getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                    if (ServerType.equals("AUTO")) {
+                        getLogger().info("AUTO server type detected: " + AUTOseverType.toUpperCase());
+                    } else {
+                        getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                    }
                     getLogger().info("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
 
                     //===========================
@@ -179,7 +217,11 @@ public final class Amend extends JavaPlugin {
                     pathNames = ServerJar.list();
                     getLogger().warning("-------------------------------");
                     getLogger().info("Amend");
-                    getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                    if (ServerType.equals("AUTO")) {
+                        getLogger().info("AUTO server type detected: " + AUTOseverType.toUpperCase());
+                    } else {
+                        getLogger().info("Server-Type Selected: " + ServerType.toUpperCase());
+                    }
                     getLogger().info("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
 
                     //===========================
@@ -215,6 +257,8 @@ public final class Amend extends JavaPlugin {
                 getLogger().warning("Amend");
                 getLogger().warning("ERROR: Invalid Server Type! Please check the config.");
                 getLogger().warning("Current Version: " + jarVersion + " (MC: " + MCVersion + ")");
+                getLogger().warning("Plugin Version: " + pluginVersion);
+                getLogger().warning("Server Type: " + ServerType);
                 getLogger().warning("Closing plugin...");
                 getLogger().warning("-------------------------------");
                 //Time out so user sees the error message.

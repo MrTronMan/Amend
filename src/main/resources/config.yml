@@ -6,15 +6,16 @@
 #    ┃╭━╮┃┃┃┃┃━┫┃┃┃╰╯┃
 #    ╰╯╱╰┻┻┻┻━━┻╯╰┻━━╯
 
-# --WHEN EDITING THIS CONFIG WHILE THE SERVER IS ON, DO NOT WORRY!...THE CONFIG REFRESHES TO SEE THE CHANGES YOU MADE.--
+# --YOU MAY EDIT THIS WHILE THE SERVER IS ON, DO NOT WORRY!...THE CONFIG REFRESHES TO SEE THE CHANGES YOU MADE AUTOMATICALLY--
 
 # This changes the jar file name. PLEASE MAKE SURE IT MATCHES THE JAR FILE NAME OR ELSE IT WILL CREATE A NEW JAR FILE.
 # Also make sure to include ".jar".
 jar-name: "server.jar"
 
-# This how you can customize the type of server you would like. It is defaulted to "paper".
+# This how you can customize the type of server you would like. It is defaulted to "AUTO".
+# AUTO allows the server to read the JAR file and determine for itself the type of server. However, you can override this.
 # The current options for selecting the server jar are "purpur" or "paper".
-server-type: "paper"
+server-type: "AUTO"
 
 # Config Version. Like every spigot dev, we ask that you DO NOT CHANGE THIS PLEASE.
-config-version: 8
+config-version: 9
