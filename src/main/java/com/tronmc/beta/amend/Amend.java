@@ -90,7 +90,7 @@ public final class Amend extends JavaPlugin {
         getLogger().info("Started Update Check...");
 
         //Plugin Version
-        String pluginVersion = "1.21.7";
+        String pluginVersion = "1.21.9";
 
         //Changes the Bukkit Version to a string and then gets the jar version and the MC version.
         String AUTOseverType = Bukkit.getServer().getName();
@@ -138,7 +138,7 @@ public final class Amend extends JavaPlugin {
             }
         }
 
-        if (MCVersion.equals("1.21.7")) {
+        if (MCVersion.equals("1.21.9")) {
 
             //Converts the jar version to an integer for comparsion
             //moved this because some servers have a different versioning system (ex. Spigot) and would run into an exception before
@@ -150,7 +150,7 @@ public final class Amend extends JavaPlugin {
             if (ServerType.equals("paper")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.21.7").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.21.9").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -177,7 +177,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PAPER version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.tronmc.com/amend/versions/paper/1.21.7/download/direct").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/paper/1.21.9/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
@@ -205,7 +205,7 @@ public final class Amend extends JavaPlugin {
             } else if (ServerType.equals("purpur")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.7").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.9").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -232,7 +232,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PURPUR version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.7/download/direct").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.9/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
