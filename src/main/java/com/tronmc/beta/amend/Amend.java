@@ -76,7 +76,7 @@ public final class Amend extends JavaPlugin {
         }
 
         //Update Checker that checks our API for the latest using a handy dependency called SpigotUpdateChecker.
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.21.7") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.21.9") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -98,6 +98,8 @@ public final class Amend extends JavaPlugin {
         String MCandVersion = BukkitVersion.substring(0, BukkitVersion.lastIndexOf("-"));
         String jarVersion = MCandVersion.substring(MCandVersion.indexOf("-") + 1);;
         String MCVersion = MCandVersion.substring(0, MCandVersion.lastIndexOf("-"));
+
+
 
 
         //Double Check if the user made any changes that the config will be the correct way by refreshing.
