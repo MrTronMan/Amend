@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: npm install node-fetch@2 @octokit/rest
+      - run: npm install @octokit/rest
       - name: Debug event
         run: |
           echo "event_name=${{ github.event_name }}"

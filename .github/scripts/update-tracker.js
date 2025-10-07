@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+// .github/scripts/update-tracker.js
 import { Octokit } from "@octokit/rest";
 
 const token = process.env.GITHUB_TOKEN;
@@ -13,21 +13,18 @@ const [owner, repo] = repoName.split("/");
 
 // --- Helpers ---
 function normalizeCandidates(version) {
-  // Try both 1.21.0 and 1.21 when it ends with ".0"
   return version.endsWith(".0") ? [version, version.replace(/\.0$/, "")] : [version];
 }
 function versionFromTitle(title) {
-  // grabs the first x.y or x.y.z in the title
-  const m = title.match(/\b(\d+\.\d+(?:\.\d+)?)/);
+  const m = title?.match(/\b(\d+\.\d+(?:\.\d+)?)/);
   return m ? m[1] : null;
 }
 function versionFromComment(cmd) {
-  // supports "/track 1.21.10"
-  const m = cmd.match(/\/track\s+(\d+\.\d+(?:\.\d+)?)/i);
+  const m = cmd?.match(/\/track\s+(\d+\.\d+(?:\.\d+)?)/i);
   return m ? m[1] : null;
 }
-function getChecklistCompletion(body) {
-  // true if NO unchecked boxes remain
+function allTasksChecked(body) {
+  // true if no unchecked boxes remain
   return !/- \[ \]/.test(body);
 }
 
@@ -52,7 +49,6 @@ async function updateOrCreateBotComment(issueNumber, newBody, marker) {
     return "created";
   }
 }
-
 async function postFinalReleaseComment(issueNumber) {
   const finalComment = `### 📝 Amend Paper/Purpur Build Status (AUTO)
 
@@ -62,6 +58,7 @@ async function postFinalReleaseComment(issueNumber) {
 
 async function fetchPaperHas(version) {
   const res = await fetch("https://api.papermc.io/v2/projects/paper");
+  if (!res.ok) throw new Error(`Paper API HTTP ${res.status}`);
   const data = await res.json();
   const cands = normalizeCandidates(version);
   return cands.some(v => data.versions.includes(v));
@@ -69,35 +66,56 @@ async function fetchPaperHas(version) {
 
 async function fetchPurpurHas(version) {
   const res = await fetch("https://api.purpurmc.org/v2/purpur");
+  if (!res.ok) throw new Error(`Purpur API HTTP ${res.status}`);
   const data = await res.json();
   const cands = normalizeCandidates(version);
   return cands.some(v => data.versions.includes(v));
 }
 
 // Toggle only the Paper & Purpur lines; preserve everything else
-function togglePaperPurpur(body, version, paperReady, purpurReady) {
-  // standardize target lines by their leading text so we only affect those
-  const paperPattern = /- \[[ x]\]\s*Waiting on Paper.*\n/;
-  const purpurPattern = /- \[[ x]\]\s*Waiting on Purpur.*\n/;
+function togglePaperPurpur(bodyRaw, paperReady, purpurReady) {
+  const NL = "\n";
+  const body = bodyRaw ?? ""; // SAFE: avoid null
+  const paperPattern = /- \[[ x]\]\s*Waiting on Paper.*(\r?\n)/i;
+  const purpurPattern = /- \[[ x]\]\s*Waiting on Purpur.*(\r?\n)/i;
 
-  const paperLine = `- [${paperReady ? "x" : " "}] Waiting on Paper to release first build (even experimental builds)\n`;
-  const purpurLine = `- [${purpurReady ? "x" : " "}] Waiting on Purpur to release first build after Paper's first builds (even experimental builds)\n`;
+  const paperLine = `- [${paperReady ? "x" : " "}] Waiting on Paper to release first build (even experimental builds)${NL}`;
+  const purpurLine = `- [${purpurReady ? "x" : " "}] Waiting on Purpur to release first build after Paper's first builds (even experimental builds)${NL}`;
 
   let updated = body;
 
-  // If the lines exist, replace them; if not, append them under the title.
-  if (paperPattern.test(updated)) updated = updated.replace(paperPattern, paperLine);
-  else updated = updated.replace(/(#.*\n[^\S\n]*\n?)/, `$1${paperLine}`);
+  // Replace if present (case-insensitive)
+  if (paperPattern.test(updated)) {
+    updated = updated.replace(paperPattern, paperLine);
+  } else {
+    // Insert after first heading if any, else append
+    const headingMatch = updated.match(/^\s*#{1,6} .*(\r?\n)/m);
+    if (headingMatch) {
+      const idx = headingMatch.index + headingMatch[0].length;
+      updated = updated.slice(0, idx) + paperLine + updated.slice(idx);
+    } else {
+      updated = (updated ? updated + NL : "") + paperLine;
+    }
+  }
 
-  if (purpurPattern.test(updated)) updated = updated.replace(purpurPattern, purpurLine);
-  else updated = updated.replace(/(#.*\n[^\S\n]*\n?)/, `$1${purpurLine}`);
+  if (purpurPattern.test(updated)) {
+    updated = updated.replace(purpurPattern, purpurLine);
+  } else {
+    const headingMatch2 = updated.match(/^\s*#{1,6} .*(\r?\n)/m);
+    if (headingMatch2) {
+      const idx = headingMatch2.index + headingMatch2[0].length;
+      updated = updated.slice(0, idx) + purpurLine + updated.slice(idx);
+    } else {
+      updated = (updated ? updated + NL : "") + purpurLine;
+    }
+  }
 
   return updated;
 }
 
 async function resolveIssueNumber() {
   if (issueNumberEnv) return parseInt(issueNumberEnv, 10);
-  // If manually scheduled run and no input given, try last updated open issue with label "update-tracker"
+  // fallback: most recently updated open issue with label update-tracker
   const { data: issues } = await octokit.issues.listForRepo({
     owner,
     repo,
@@ -115,14 +133,11 @@ async function resolveIssueNumber() {
   const issueNumber = await resolveIssueNumber();
   const issue = await getIssue(issueNumber);
 
-  // Figure out the target version:
-  // 1) from /track <ver> comment
-  // 2) from issue title token like "1.21.10"
-  // 3) fallback: a heading "# 1.21.10" or "## 1.21.10" in body
+  // Resolve version from: comment (/track x.y.z) -> title (x.y or x.y.z) -> (optional) heading
   let version =
     (eventName === "issue_comment" && versionFromComment(commentBody)) ||
     versionFromTitle(issueTitleEnv) ||
-    (issue.data.body.match(/^\s*#{1,6}\s*([\d.]+)/m)?.[1]) ||
+    (issue.data.body ?? "").match(/^\s*#{1,6}\s*([\d.]+)/m)?.[1] ||
     null;
 
   if (!version) {
@@ -130,22 +145,24 @@ async function resolveIssueNumber() {
     process.exit(0);
   }
 
-  // Check Paper/Purpur availability
+  // Check availability
   const [paperReady, purpurReady] = await Promise.all([
     fetchPaperHas(version),
     fetchPurpurHas(version),
   ]);
 
-  // Update the issue body ONLY for Paper & Purpur lines
-  const updatedBody = togglePaperPurpur(issue.data.body, version, paperReady, purpurReady);
-  if (updatedBody !== issue.data.body) {
-    await setIssueBody(issueNumber, updatedBody);
+  // Update issue body ONLY for Paper & Purpur
+  const originalBody = issue.data.body ?? "";
+  const newBody = togglePaperPurpur(originalBody, paperReady, purpurReady);
+
+  if (newBody !== originalBody) {
+    await setIssueBody(issueNumber, newBody);
   }
 
-  // Maintain a single status comment
+  // Status comment (single, auto-updating)
   const marker = "<!-- amend-bot-status -->";
   const statusBody = `${marker}
-### 📝 Amend Paper/Purpur Build Status (AUTO)
+### 📝 Amend Build Status (auto-updated)
 
 - ${paperReady ? "✅" : "❌"} Paper: ${version}
 - ${purpurReady ? "✅" : "❌"} Purpur: ${version}
@@ -154,10 +171,8 @@ _Last checked: ${new Date().toISOString()}_
 `;
   await updateOrCreateBotComment(issueNumber, statusBody, marker);
 
-  // If ALL tasks in the issue are checked, post the final release comment once
-  const finalDone = getChecklistCompletion(updatedBody);
-  if (finalDone) {
-    // avoid duplicating the final release comment—only post if we haven't already
+  // Final release comment when ALL tasks are checked
+  if (allTasksChecked(newBody)) {
     const comments = await listComments(issueNumber);
     const alreadyPosted = comments.some(c => /Amend has been released/i.test(c.body || ""));
     if (!alreadyPosted) await postFinalReleaseComment(issueNumber);
