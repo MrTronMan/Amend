@@ -1,6 +1,5 @@
-// Uses Node 20's global fetch (no node-fetch). ESM is fine without "type": "module" if you run as plain node.
-// If you prefer ESM syntax, add "type": "module" to package.json and keep using import.
-import { Octokit } from "@octokit/rest";
+// CommonJS to avoid ESM warnings. Node 20 has global fetch.
+const { Octokit } = require("@octokit/rest");
 
 const token = process.env.GITHUB_TOKEN;
 const repoName = process.env.REPO;
@@ -12,20 +11,23 @@ const issueTitleEnv = process.env.ISSUE_TITLE || "";
 const octokit = new Octokit({ auth: token });
 const [owner, repo] = repoName.split("/");
 
-// ---------- Helpers ----------
+// ---------- helpers ----------
 function normalizeCandidates(version) {
   return version.endsWith(".0") ? [version, version.replace(/\.0$/, "")] : [version];
 }
 function versionFromTitle(title) {
-  const m = title?.match(/\b(\d+\.\d+(?:\.\d+)?)/);
+  const m = title && title.match(/\b(\d+\.\d+(?:\.\d+)?)/);
   return m ? m[1] : null;
 }
 function versionFromComment(cmd) {
-  const m = cmd?.match(/\/track\s+(\d+\.\d+(?:\.\d+)?)/i);
+  const m = cmd && cmd.match(/\/track\s+(\d+\.\d+(?:\.\d+)?)/i);
   return m ? m[1] : null;
 }
-function allTasksChecked(body) {
-  return !/- \[ \]/.test(body); // true if no unchecked boxes
+function allTasksChecked(markdown) {
+  return !/- \[ \]/.test(markdown || "");
+}
+function hasChecklist(markdown) {
+  return /^-\s\[[ xX]\]\s/m.test(markdown || "");
 }
 
 async function getIssue(issueNumber) {
@@ -63,7 +65,6 @@ async function fetchPaperHas(version) {
   const cands = normalizeCandidates(version);
   return cands.some(v => data.versions.includes(v));
 }
-
 async function fetchPurpurHas(version) {
   const res = await fetch("https://api.purpurmc.org/v2/purpur");
   if (!res.ok) throw new Error(`Purpur API HTTP ${res.status}`);
@@ -72,45 +73,41 @@ async function fetchPurpurHas(version) {
   return cands.some(v => data.versions.includes(v));
 }
 
-// Toggle only the Paper & Purpur lines; preserve everything else
-function togglePaperPurpur(bodyRaw, paperReady, purpurReady) {
+// build the canonical checklist template for a version
+function buildChecklistTemplate(version) {
+  return `# ${version}
+This will help keep track for you of Amend's ${version} release.
+
+- [ ] Waiting on Spigot to release buid
+- [ ] Waiting on Paper to release first build (even experimental builds)
+- [ ] Waiting on Purpur to release first build after Paper's first builds (even experimental builds)
+- [ ] Build Amend
+- [ ] Build into API ${version.replace(/\d+$/, m => (parseInt(m, 10) - 1).toString())}  <!-- adjust if you want -->
+- [ ] Test Amend and Verify
+- [ ] Add Version to Website and other third party plugin distributors
+`;
+}
+
+// toggle only the paper/purpur lines in any markdown text that contains the checklist
+function togglePaperPurpur(markdownRaw, paperReady, purpurReady) {
   const NL = "\n";
-  const body = bodyRaw ?? ""; // safe
+  const md = markdownRaw ?? "";
   const paperPattern = /- \[[ x]\]\s*Waiting on Paper.*(\r?\n)/i;
   const purpurPattern = /- \[[ x]\]\s*Waiting on Purpur.*(\r?\n)/i;
 
   const paperLine = `- [${paperReady ? "x" : " "}] Waiting on Paper to release first build (even experimental builds)${NL}`;
   const purpurLine = `- [${purpurReady ? "x" : " "}] Waiting on Purpur to release first build after Paper's first builds (even experimental builds)${NL}`;
 
-  let updated = body;
+  let out = md;
+  if (paperPattern.test(out)) out = out.replace(paperPattern, paperLine);
+  if (purpurPattern.test(out)) out = out.replace(purpurPattern, purpurLine);
+  return out;
+}
 
-  // Replace if present (case-insensitive)
-  if (paperPattern.test(updated)) {
-    updated = updated.replace(paperPattern, paperLine);
-  } else {
-    // Insert after first heading if any, else append
-    const headingMatch = updated.match(/^\s*#{1,6} .*(\r?\n)/m);
-    if (headingMatch) {
-      const idx = headingMatch.index + headingMatch[0].length;
-      updated = updated.slice(0, idx) + paperLine + updated.slice(idx);
-    } else {
-      updated = (updated ? updated + NL : "") + paperLine;
-    }
-  }
-
-  if (purpurPattern.test(updated)) {
-    updated = updated.replace(purpurPattern, purpurLine);
-  } else {
-    const headingMatch2 = updated.match(/^\s*#{1,6} .*(\r?\n)/m);
-    if (headingMatch2) {
-      const idx = headingMatch2.index + headingMatch2[0].length;
-      updated = updated.slice(0, idx) + purpurLine + updated.slice(idx);
-    } else {
-      updated = (updated ? updated + NL : "") + purpurLine;
-    }
-  }
-
-  return updated;
+// mirror a compact checklist view (all checklist lines) from markdown
+function extractChecklistBlock(markdown) {
+  const lines = (markdown || "").match(/^-\s\[[ xX]\]\s.*$/gm);
+  return lines ? lines.join("\n") : "_(No checklist found)_";
 }
 
 async function resolveIssueNumber() {
@@ -133,57 +130,60 @@ async function resolveIssueNumber() {
   const issueNumber = await resolveIssueNumber();
   const issue = await getIssue(issueNumber);
 
-  // Resolve version: comment (/track x.y.z) -> title -> (optional) heading in body
+  // resolve version: /track <ver> comment -> title token -> heading in body
   let version =
     (eventName === "issue_comment" && versionFromComment(commentBody)) ||
     versionFromTitle(issueTitleEnv) ||
-    (issue.data.body ?? "").match(/^\s*#{1,6}\s*([\d.]+)/m)?.[1] ||
+    ((issue.data.body || "").match(/^\s*#{1,6}\s*([\d.]+)/m)?.[1]) ||
     null;
 
   if (!version) {
-    console.log("No version found. Use an issue title like '1.21.10 Tracking' or comment '/track 1.21.10'. Exiting.");
+    console.log("No version found. Use issue title like '1.21.10 Tracking' or comment '/track 1.21.10'. Exiting.");
     process.exit(0);
   }
 
-  // Check availability
+  // ensure the issue body contains a checklist (seed it if missing)
+  let body = issue.data.body || "";
+  if (!hasChecklist(body)) {
+    const seeded = buildChecklistTemplate(version);
+    // If the body is empty, set to template; else append after a blank line
+    body = body.trim() ? body.trim() + "\n\n" + seeded : seeded;
+    await setIssueBody(issueNumber, body);
+  }
+
+  // now check Paper/Purpur and update ONLY those in the issue body
   const [paperReady, purpurReady] = await Promise.all([
     fetchPaperHas(version),
     fetchPurpurHas(version),
   ]);
 
-  // Update issue body ONLY for Paper & Purpur
-  const originalBody = issue.data.body ?? "";
-  const newBody = togglePaperPurpur(originalBody, paperReady, purpurReady);
-
-  if (newBody !== originalBody) {
+  const newBody = togglePaperPurpur(body, paperReady, purpurReady);
+  if (newBody !== body) {
     await setIssueBody(issueNumber, newBody);
   }
 
-  // Build a full checklist excerpt (mirror all tasks) from the updated body
-  const checklistLines =
-    (newBody.match(/^-\s\[[ xX]\]\s.*$/gm) || []).join("\n") ||
-    "_(No checklist found in issue body)_";
-
-  // Status comment (single, auto-updating) with full checklist mirrored
+  // create or update the bot's own checklist comment (it creates it for you)
   const marker = "<!-- amend-bot-status -->";
+  const mirroredChecklist = extractChecklistBlock(newBody);
   const statusBody = `${marker}
 ### 📝 Amend Build Status (auto-updated)
 
 - ${paperReady ? "✅" : "❌"} Paper: ${version}
 - ${purpurReady ? "✅" : "❌"} Purpur: ${version}
 
-**Checklist (mirrored from issue body):**
-${checklistLines}
+**Checklist (bot-created & mirrored from issue body):**
+${mirroredChecklist}
 
 _Last checked: ${new Date().toISOString()}_
 `;
+
   await updateOrCreateBotComment(issueNumber, statusBody, marker);
 
-  // Final release comment when ALL tasks are checked
+  // if all tasks in the issue body are checked, drop final release comment (once)
   if (allTasksChecked(newBody)) {
     const comments = await listComments(issueNumber);
-    const alreadyPosted = comments.some(c => /Amend has been released/i.test(c.body || ""));
-    if (!alreadyPosted) await postFinalReleaseComment(issueNumber);
+    const already = comments.some(c => /Amend has been released/i.test(c.body || ""));
+    if (!already) await postFinalReleaseComment(issueNumber);
   }
 
   console.log("Done.");
