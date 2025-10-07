@@ -1,13 +1,31 @@
 name: Update Tracker
 
 on:
-  workflow_dispatch:
+  # Auto when you open/edit/label the issue
   issues:
-    types: [labeled, opened]
+    types: [opened, edited, labeled]
+  # Auto when you comment the version like "/track 1.21.10"
+  issue_comment:
+    types: [created, edited]
+  # Optional: periodic refresh
+  schedule:
+    - cron: "0 */6 * * *"   # every 6 hours
+  # Optional: manual run (lets you pick the issue)
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: "Issue number to update (optional)"
+        required: false
+
+permissions:
+  issues: write
 
 jobs:
   check-builds:
-    if: contains(github.event.issue.labels.*.name, 'update-tracker')
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      github.event_name == 'issue_comment' ||
+      (github.event_name == 'issues' && (github.action == 'opened' || github.action == 'edited' || github.action == 'labeled'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,5 +40,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          # Determine ISSUE_NUMBER based on trigger:
+          ISSUE_NUMBER: ${{ github.event_name == 'workflow_dispatch' && inputs.issue_number || (github.event_name == 'issue_comment' && github.event.issue.number) || (github.event_name == 'issues' && github.event.issue.number) || '' }}
+          EVENT_NAME: ${{ github.event_name }}
+          COMMENT_BODY: ${{ github.event_name == 'issue_comment' && github.event.comment.body || '' }}
+          ISSUE_TITLE: ${{ (github.event_name == 'issues' && github.event.issue.title) || (github.event_name == 'issue_comment' && github.event.issue.title) || '' }}
         run: node .github/scripts/update-tracker.js
