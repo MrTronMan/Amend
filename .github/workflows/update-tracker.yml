@@ -1,0 +1,26 @@
+name: Update Tracker
+
+on:
+  workflow_dispatch:
+  issues:
+    types: [labeled, opened]
+
+jobs:
+  check-builds:
+    if: contains(github.event.issue.labels.*.name, 'update-tracker')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: npm install node-fetch@2 @octokit/rest
+
+      - name: Run tracker
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node .github/scripts/update-tracker.js
