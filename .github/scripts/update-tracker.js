@@ -1,4 +1,5 @@
-// .github/scripts/update-tracker.js
+// Uses Node 20's global fetch (no node-fetch). ESM is fine without "type": "module" if you run as plain node.
+// If you prefer ESM syntax, add "type": "module" to package.json and keep using import.
 import { Octokit } from "@octokit/rest";
 
 const token = process.env.GITHUB_TOKEN;
@@ -11,7 +12,7 @@ const issueTitleEnv = process.env.ISSUE_TITLE || "";
 const octokit = new Octokit({ auth: token });
 const [owner, repo] = repoName.split("/");
 
-// --- Helpers ---
+// ---------- Helpers ----------
 function normalizeCandidates(version) {
   return version.endsWith(".0") ? [version, version.replace(/\.0$/, "")] : [version];
 }
@@ -24,8 +25,7 @@ function versionFromComment(cmd) {
   return m ? m[1] : null;
 }
 function allTasksChecked(body) {
-  // true if no unchecked boxes remain
-  return !/- \[ \]/.test(body);
+  return !/- \[ \]/.test(body); // true if no unchecked boxes
 }
 
 async function getIssue(issueNumber) {
@@ -75,7 +75,7 @@ async function fetchPurpurHas(version) {
 // Toggle only the Paper & Purpur lines; preserve everything else
 function togglePaperPurpur(bodyRaw, paperReady, purpurReady) {
   const NL = "\n";
-  const body = bodyRaw ?? ""; // SAFE: avoid null
+  const body = bodyRaw ?? ""; // safe
   const paperPattern = /- \[[ x]\]\s*Waiting on Paper.*(\r?\n)/i;
   const purpurPattern = /- \[[ x]\]\s*Waiting on Purpur.*(\r?\n)/i;
 
@@ -115,7 +115,7 @@ function togglePaperPurpur(bodyRaw, paperReady, purpurReady) {
 
 async function resolveIssueNumber() {
   if (issueNumberEnv) return parseInt(issueNumberEnv, 10);
-  // fallback: most recently updated open issue with label update-tracker
+  // Fallback: most recently updated open issue with label update-tracker
   const { data: issues } = await octokit.issues.listForRepo({
     owner,
     repo,
@@ -133,7 +133,7 @@ async function resolveIssueNumber() {
   const issueNumber = await resolveIssueNumber();
   const issue = await getIssue(issueNumber);
 
-  // Resolve version from: comment (/track x.y.z) -> title (x.y or x.y.z) -> (optional) heading
+  // Resolve version: comment (/track x.y.z) -> title -> (optional) heading in body
   let version =
     (eventName === "issue_comment" && versionFromComment(commentBody)) ||
     versionFromTitle(issueTitleEnv) ||
@@ -159,13 +159,21 @@ async function resolveIssueNumber() {
     await setIssueBody(issueNumber, newBody);
   }
 
-  // Status comment (single, auto-updating)
+  // Build a full checklist excerpt (mirror all tasks) from the updated body
+  const checklistLines =
+    (newBody.match(/^-\s\[[ xX]\]\s.*$/gm) || []).join("\n") ||
+    "_(No checklist found in issue body)_";
+
+  // Status comment (single, auto-updating) with full checklist mirrored
   const marker = "<!-- amend-bot-status -->";
   const statusBody = `${marker}
 ### 📝 Amend Build Status (auto-updated)
 
 - ${paperReady ? "✅" : "❌"} Paper: ${version}
 - ${purpurReady ? "✅" : "❌"} Purpur: ${version}
+
+**Checklist (mirrored from issue body):**
+${checklistLines}
 
 _Last checked: ${new Date().toISOString()}_
 `;

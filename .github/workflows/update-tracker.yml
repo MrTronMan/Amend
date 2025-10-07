@@ -3,8 +3,10 @@ name: Update Tracker
 on:
   issues: { types: [opened, edited, labeled] }
   issue_comment: { types: [created, edited] }
+  # Optional periodic refresh (every 6h). Remove if you don't want it.
   schedule:
     - cron: "0 */6 * * *"
+  # Optional manual run. You can pass an issue number.
   workflow_dispatch:
     inputs:
       issue_number:
@@ -19,16 +21,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+
+      # Only Octokit needed. Node 20 has global fetch; no node-fetch.
       - run: npm install @octokit/rest
-      - name: Debug event
-        run: |
-          echo "event_name=${{ github.event_name }}"
-          echo "action=${{ github.action }}"
-          echo "issue_number_raw=${{ github.event.issue.number }}"
-          echo "labels_json=$(jq -c '.issue.labels | map(.name)' <<< '${{ toJson(github.event) }}')"
+
       - name: Run tracker
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
