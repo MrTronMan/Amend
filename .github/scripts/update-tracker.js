@@ -37,7 +37,7 @@ async function updateBotComment(version, results) {
 
   const marker = "<!-- amend-bot-status -->";
   const body = `${marker}
-### 📝 Amend Build Status (auto-updated)
+### 📝 Amend Paper/Purpur Build Status (AUTO)
 
 - ${results.paper ? "✅" : "❌"} Paper: ${version}
 - ${results.purpur ? "✅" : "❌"} Purpur: ${version}
@@ -70,8 +70,8 @@ _Last checked: ${new Date().toISOString()}_
   try {
     const [owner, repo] = repoName.split("/");
     const issue = await octokit.issues.get({ owner, repo, issue_number: issueNumber });
-    const match = issue.data.body.match(/##\s*([\d.]+)/);
-    if (!match) throw new Error("No version heading found (## x.y.z)");
+    const match = issue.data.body.match(/#\s*([\d.]+)/);
+    if (!match) throw new Error("No version heading found (# x.y.z)");
 
     const version = match[1];
     const results = {
