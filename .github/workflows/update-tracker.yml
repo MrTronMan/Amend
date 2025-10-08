@@ -3,9 +3,6 @@ name: Update Tracker
 on:
   issues: { types: [opened, edited, labeled] }
   issue_comment: { types: [created, edited] }
-  # OPTIONAL: periodic refresh every 6 hours
-  schedule:
-    - cron: "0 */6 * * *"
   # OPTIONAL: manual run with an optional issue number
   workflow_dispatch:
     inputs:

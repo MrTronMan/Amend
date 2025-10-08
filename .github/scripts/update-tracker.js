@@ -155,12 +155,12 @@ function buildStatus(version, { paperReady, purpurReady }) {
   const ts = `_Last updated: ${formatTimestamp()}_`;
 
   return `${STATUS_MARKER}
-### 📝 Amend Paper/Purpur Status (auto-updated)
+### 📝 Amend Paper/Purpur Status (AUTO)
 
 - ${paperReady ? "✅" : "❌"} Paper: ${version}
 - ${purpurReady ? "✅" : "❌"} Purpur: ${version}
 
-_Last checked: ${ts}_
+_${ts}_
 `;
 }
 
@@ -222,6 +222,23 @@ async function resolveIssueNumber() {
   // Upsert separate status comment (always rebuilt)
   const statusBody = buildStatus(version, { paperReady, purpurReady });
   await upsertComment(issueNumber, STATUS_MARKER, statusBody);
+
+  // Check if all checklist items are done
+  if (allDone) {
+  const comments = await listComments(issueNumber);
+  const alreadyPosted = comments.some(
+    c => c.body && c.body.includes("🎉 Amend")
+  );
+
+  if (!alreadyPosted) {
+    await octokit.issues.createComment({
+      owner, repo,
+      issue_number: issueNumber,
+      body: `### 📝 Amend Paper/Purpur Build Status (AUTO)\n\n` +
+            `# 🎉 Amend ${version} has been released! Download @ [amend.mrtron.dev](https://amend.mrtron.dev/download)!`
+    });
+  }
+}
 
   console.log("Done.");
 })().catch(err => {

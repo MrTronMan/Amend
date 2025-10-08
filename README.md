@@ -6,11 +6,11 @@ A plugin that auto updates **paper** or **purpur** to the newest version based o
  *(there have been no problems though so far based on different types of sized worlds and what else I have tested. Still, be careful anyways :D)*
 
 # Download
-Currently as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
+Currently, as of now you can download it on our new website @ [amend.mrtron.dev/download](https://amend.mrtron.dev/download)
 
 # Windows
 **Windows is NOT fully supported**, this is because of the way Windows handles files compared to Linux. If you would like to use this on Windows, **the only support Amend has is through Crafty's Executable URL**.
-You can place `https://api.tronmc.com/amend/versions/(SERVER TYPE HERE)/1.21.9/download/` into the executable URL and click **`Update Executable`** to download the latest version of the server jar.
+You can place `https://api.tronmc.com/amend/versions/(SERVER TYPE HERE)/1.21.10/download/` into the executable URL and click **`Update Executable`** to download the latest version of the server jar.
 
 ![](https://cdn.tronmc.com/img/git/crafty_update.png)
 
@@ -49,7 +49,7 @@ server-type: "AUTO"
 config-version: 9
 
 ```
- - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.21.9` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
+ - Then place the (plugin) jar in and it will automatically update it to the newest version, ***please note as of now the plugin is updating the latest `1.21.10` builds and will continue to update until a new release comes out, then you will need to come back here to get the newest plugin update.***
  
  Update checks for the plugin are currently unavailable to switch off, but we only create the update notification if it's a critical update, not a fancy one.
  ###### © 2025 mrtron.dev. All Rights Reserved.
