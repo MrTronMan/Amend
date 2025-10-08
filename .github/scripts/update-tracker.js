@@ -101,7 +101,7 @@ dayjs.extend(utc);
 dayjs.extend(tz);
 
 function formatTimestamp() {
-  return dayjs().tz("America/New_York").format("YYYY-MM-DD HH:mm z");
+  return dayjs().tz("America/New_York").format("YYYY-MM-DD HH:mm EST");
 }
 
 // Patch ONLY the two auto lines + timestamp; leave everything else as-is
