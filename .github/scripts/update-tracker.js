@@ -126,7 +126,10 @@ function patchChecklist(existingBody, version, { paperReady, purpurReady }) {
   }
 
   // Refresh timestamp (if present), or append it at the end
-  const tsLine = `_Last updated: ${new Date().toISOString()}_`;
+  const tsLine = `_Last updated: ${new Date().toLocaleString("en-US", {
+    timeZone: "America/New_York"
+  })}_`;
+
   if (/_Last updated: .*_/i.test(body)) {
     body = body.replace(/_Last updated: .*_/i, tsLine);
   } else {
