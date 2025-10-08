@@ -27,7 +27,7 @@ jobs:
           node-version: "20"
 
       # Only Octokit needed. Node 20 has global fetch.
-      - run: npm install @octokit/rest
+      - run: npm install @octokit/rest dayjs
 
       - name: Run tracker
         env:
