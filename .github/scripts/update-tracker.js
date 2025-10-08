@@ -92,6 +92,18 @@ _Last updated: ${ts}_
 `;
 }
 
+
+//time function
+const dayjs = require("dayjs");
+const tz = require("dayjs/plugin/timezone");
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
+dayjs.extend(tz);
+
+function formatTimestamp() {
+  return dayjs().tz("America/New_York").format("YYYY-MM-DD HH:mm z");
+}
+
 // Patch ONLY the two auto lines + timestamp; leave everything else as-is
 function patchChecklist(existingBody, version, { paperReady, purpurReady }) {
   const NL = "\n";
@@ -126,9 +138,8 @@ function patchChecklist(existingBody, version, { paperReady, purpurReady }) {
   }
 
   // Refresh timestamp (if present), or append it at the end
-  const tsLine = `_Last updated: ${new Date().toLocaleString("en-US", {
-    timeZone: "America/New_York"
-  })}_`;
+  const tsLine = `_Last updated: ${formatTimestamp()}_`;
+
 
   if (/_Last updated: .*_/i.test(body)) {
     body = body.replace(/_Last updated: .*_/i, tsLine);
@@ -141,7 +152,8 @@ function patchChecklist(existingBody, version, { paperReady, purpurReady }) {
 
 // Status comment content (rewritten each run — it's bot-only)
 function buildStatus(version, { paperReady, purpurReady }) {
-  const ts = new Date().toISOString();
+  const ts = `_Last updated: ${formatTimestamp()}_`;
+
   return `${STATUS_MARKER}
 ### 📝 Amend Paper/Purpur Status (auto-updated)
 
