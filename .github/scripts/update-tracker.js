@@ -224,6 +224,8 @@ async function resolveIssueNumber() {
   await upsertComment(issueNumber, STATUS_MARKER, statusBody);
 
   // Check if all checklist items are done
+  const allDone = /\- \[ \]/.test(checklistBody) === false; // no unchecked boxes remain
+  
   if (allDone) {
   const comments = await listComments(issueNumber);
   const alreadyPosted = comments.some(
