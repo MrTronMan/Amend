@@ -3,10 +3,10 @@ name: Update Tracker
 on:
   issues: { types: [opened, edited, labeled] }
   issue_comment: { types: [created, edited] }
-  # Optional periodic refresh (every 6h). Remove if you don't want it.
+  # Optional: periodic refresh (every 6 hours). Remove if not wanted.
   schedule:
     - cron: "0 */6 * * *"
-  # Optional manual run. You can pass an issue number.
+  # Optional: manual run (you may pass an issue number)
   workflow_dispatch:
     inputs:
       issue_number:
@@ -26,7 +26,7 @@ jobs:
         with:
           node-version: "20"
 
-      # Only Octokit needed. Node 20 has global fetch; no node-fetch.
+      # Only Octokit needed. Node 20 has global fetch.
       - run: npm install @octokit/rest
 
       - name: Run tracker
