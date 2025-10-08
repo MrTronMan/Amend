@@ -76,7 +76,7 @@ public final class Amend extends JavaPlugin {
         }
 
         //Update Checker that checks our API for the latest using a handy dependency called SpigotUpdateChecker.
-        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.21.9") // A link to a URL that contains the latest version as String
+        new UpdateChecker(this, UpdateCheckSource.CUSTOM_URL, "https://api.tronmc.com/amend/versions/1.21.10") // A link to a URL that contains the latest version as String
                 .setDownloadLink("https://amend.mrtron.dev/download") // You can either use a custom URL or the Spigot Resource ID
                 .setNotifyOpsOnJoin(false) // Notify OPs on Join when a new version is found (default)
                 .checkNow(); // And check right now
@@ -90,7 +90,7 @@ public final class Amend extends JavaPlugin {
         getLogger().info("Started Update Check...");
 
         //Plugin Version
-        String pluginVersion = "1.21.9";
+        String pluginVersion = "1.21.10";
 
         //Changes the Bukkit Version to a string and then gets the jar version and the MC version.
         String AUTOseverType = Bukkit.getServer().getName();
@@ -140,7 +140,7 @@ public final class Amend extends JavaPlugin {
             }
         }
 
-        if (MCVersion.equals("1.21.9")) {
+        if (MCVersion.equals("1.21.10")) {
 
             //Converts the jar version to an integer for comparsion
             //moved this because some servers have a different versioning system (ex. Spigot) and would run into an exception before
@@ -152,7 +152,7 @@ public final class Amend extends JavaPlugin {
             if (ServerType.equals("paper")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.21.9").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/paper/1.21.10").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -179,7 +179,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PAPER version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.tronmc.com/amend/versions/paper/1.21.9/download/direct").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/paper/1.21.10/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
@@ -207,7 +207,7 @@ public final class Amend extends JavaPlugin {
             } else if (ServerType.equals("purpur")) {
                 URLConnection connection = null;
                 try {
-                    connection = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.9").openConnection();
+                    connection = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.10").openConnection();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -234,7 +234,7 @@ public final class Amend extends JavaPlugin {
                     if (version != latest) {
                         getLogger().warning("Version is NOT up to date! Newest PURPUR version is " + latest);
                         getLogger().info("Downloading update and applying to " + serverJarName + "...");
-                        InputStream in = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.9/download/direct").openStream();
+                        InputStream in = new URL("https://api.tronmc.com/amend/versions/purpur/1.21.10/download/direct").openStream();
                         Files.copy(in, Paths.get(serverJarName), StandardCopyOption.REPLACE_EXISTING);
                         getLogger().info("Update Completed!");
                         getLogger().warning("-------------------------------");
