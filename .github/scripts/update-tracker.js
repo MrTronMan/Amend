@@ -1,4 +1,4 @@
-// Node 20: global fetch is available. CommonJS style to avoid ESM warnings.
+// Node 20: global fetch. CommonJS to avoid ESM warnings.
 const { Octokit } = require("@octokit/rest");
 
 const token = process.env.GITHUB_TOKEN;
@@ -11,7 +11,11 @@ const issueTitleEnv = process.env.ISSUE_TITLE || "";
 const octokit = new Octokit({ auth: token });
 const [owner, repo] = repoName.split("/");
 
-// ------------- Helpers -------------
+// ---------- markers for the two bot comments ----------
+const CHECKLIST_MARKER = "<!-- amend-bot-checklist -->";
+const STATUS_MARKER    = "<!-- amend-bot-status -->";
+
+// ---------- helpers ----------
 function normalizeCandidates(version) {
   return version.endsWith(".0") ? [version, version.replace(/\.0$/, "")] : [version];
 }
@@ -34,18 +38,22 @@ async function setIssueBody(issueNumber, body) {
   return octokit.issues.update({ owner, repo, issue_number: issueNumber, body });
 }
 async function listComments(issueNumber) {
-  const { data } = await octokit.issues.listComments({ owner, repo, issue_number: issueNumber, per_page: 100 });
+  const { data } = await octokit.issues.listComments({
+    owner, repo, issue_number: issueNumber, per_page: 100,
+  });
   return data;
 }
-async function updateOrCreateBotComment(issueNumber, newBody, marker) {
+async function upsertComment(issueNumber, marker, bodyBuilder) {
   const comments = await listComments(issueNumber);
-  const existing = comments.find((c) => c.body && c.body.includes(marker));
+  const existing = comments.find(c => c.body && c.body.includes(marker));
+  const newBody = bodyBuilder();
+
   if (existing) {
     await octokit.issues.updateComment({ owner, repo, comment_id: existing.id, body: newBody });
-    return "updated";
+    return { action: "updated", body: newBody };
   } else {
     await octokit.issues.createComment({ owner, repo, issue_number: issueNumber, body: newBody });
-    return "created";
+    return { action: "created", body: newBody };
   }
 }
 async function postFinalReleaseComment(issueNumber) {
@@ -54,29 +62,33 @@ async function postFinalReleaseComment(issueNumber) {
 # ✅ Amend has been released you can download @ [amend.mrtron.dev](https://amend.mrtron.dev/download)!`;
   await octokit.issues.createComment({ owner, repo, issue_number: issueNumber, body: finalComment });
 }
-
 async function fetchPaperHas(version) {
   const res = await fetch("https://api.papermc.io/v2/projects/paper");
   if (!res.ok) throw new Error(`Paper API HTTP ${res.status}`);
   const data = await res.json();
   const cands = normalizeCandidates(version);
-  return cands.some((v) => data.versions.includes(v));
+  return cands.some(v => data.versions.includes(v));
 }
 async function fetchPurpurHas(version) {
   const res = await fetch("https://api.purpurmc.org/v2/purpur");
   if (!res.ok) throw new Error(`Purpur API HTTP ${res.status}`);
   const data = await res.json();
   const cands = normalizeCandidates(version);
-  return cands.some((v) => data.versions.includes(v));
+  return cands.some(v => data.versions.includes(v));
 }
 
-// Canonical checklist content (bot-owned comment only)
-function buildChecklistComment(version, opts) {
-  const { paperReady, purpurReady } = opts;
+// ---------- checklist content (bot-owned) ----------
+function derivePrevPatch(version) {
+  const parts = version.split(".");
+  if (parts.length === 3) {
+    const n = parseInt(parts[2], 10);
+    return `${parts[0]}.${parts[1]}.${Math.max(0, n - 1)}`;
+  }
+  return version;
+}
+function buildChecklist(version, { paperReady, purpurReady }) {
   const lastUpdated = new Date().toISOString();
-
-  // Only Paper & Purpur are auto-toggled. Others remain as initially unchecked (bot-owned).
-  return `<!-- amend-bot-status -->
+  return `${CHECKLIST_MARKER}
 # ${version}
 This will help keep track for you of Amend's ${version} release.
 
@@ -92,28 +104,25 @@ _Last updated: ${lastUpdated}_
 `;
 }
 
-// derive “previous patch” for the “Build into API …” line (you can replace with static if you prefer)
-function derivePrevPatch(version) {
-  // e.g., 1.21.10 -> 1.21.9 ; 1.21 -> 1.21 (no change). Adjust if your intent differs.
-  const parts = version.split(".");
-  if (parts.length === 3) {
-    const n = parseInt(parts[2], 10);
-    return `${parts[0]}.${parts[1]}.${Math.max(0, n - 1)}`;
-  }
-  return version;
+// ---------- status comment (separate from checklist) ----------
+function buildStatus(version, { paperReady, purpurReady }) {
+  const ts = new Date().toISOString();
+  return `${STATUS_MARKER}
+### 📝 Amend Paper/Purpur Status (auto-updated)
+
+- ${paperReady ? "✅" : "❌"} Paper: ${version}
+- ${purpurReady ? "✅" : "❌"} Purpur: ${version}
+
+_Last checked: ${ts}_
+`;
 }
 
 async function resolveIssueNumber() {
   if (issueNumberEnv) return parseInt(issueNumberEnv, 10);
-  // Fallback: last updated open issue with label update-tracker
+  // fallback: last updated open issue with label update-tracker
   const { data: issues } = await octokit.issues.listForRepo({
-    owner,
-    repo,
-    labels: "update-tracker",
-    state: "open",
-    per_page: 1,
-    sort: "updated",
-    direction: "desc",
+    owner, repo, labels: "update-tracker", state: "open", per_page: 1,
+    sort: "updated", direction: "desc",
   });
   if (issues.length) return issues[0].number;
   throw new Error("No ISSUE_NUMBER provided and no open 'update-tracker' issues found.");
@@ -123,7 +132,7 @@ async function resolveIssueNumber() {
   const issueNumber = await resolveIssueNumber();
   const issue = await getIssue(issueNumber);
 
-  // Resolve version: /track <ver> comment -> title token -> heading in body (optional fallback)
+  // resolve version: /track <ver> -> title token -> heading in original body (if any)
   let version =
     (eventName === "issue_comment" && versionFromComment(commentBody)) ||
     versionFromTitle(issueTitleEnv) ||
@@ -135,42 +144,44 @@ async function resolveIssueNumber() {
     process.exit(0);
   }
 
-  // Check Paper/Purpur availability
-  const [paperReady, purpurReady] = await Promise.all([fetchPaperHas(version), fetchPurpurHas(version)]);
+  // check Paper/Purpur
+  const [paperReady, purpurReady] = await Promise.all([
+    fetchPaperHas(version),
+    fetchPurpurHas(version),
+  ]);
 
-  // Ensure original issue body is essentially blank (single space) as requested
-  const bodyCurrent = issue.data.body ?? "";
-  if (bodyCurrent.trim() !== "") {
-    // replace with a single space to keep Markdown body visually blank
+  // clear issue body to a single space (your request)
+  const currentBody = issue.data.body ?? "";
+  if (currentBody.trim() !== "") {
     await setIssueBody(issueNumber, " ");
   }
 
-  // Create or update ONE bot-owned checklist comment
-  const marker = "<!-- amend-bot-status -->";
-  const desired = buildChecklistComment(version, { paperReady, purpurReady });
+  // upsert the CHECKLIST comment (bot-owned)
+  await upsertComment(
+    issueNumber,
+    CHECKLIST_MARKER,
+    () => buildChecklist(version, { paperReady, purpurReady })
+  );
 
+  // upsert the STATUS comment (separate)
+  await upsertComment(
+    issueNumber,
+    STATUS_MARKER,
+    () => buildStatus(version, { paperReady, purpurReady })
+  );
+
+  // (optional) final release comment if everything is checked in the checklist.
+  // NOTE: right now only Paper/Purpur are auto-ticked. If you later add commands
+  // to mark the remaining items done, this will fire then.
   const comments = await listComments(issueNumber);
-  const existing = comments.find((c) => c.body && c.body.includes(marker));
-
-  if (existing) {
-    // We rebuild fully each run (keeps logic simple; bot is sole editor)
-    await octokit.issues.updateComment({ owner, repo, comment_id: existing.id, body: desired });
-    console.log("✅ Updated bot checklist comment.");
-  } else {
-    await octokit.issues.createComment({ owner, repo, issue_number: issueNumber, body: desired });
-    console.log("✅ Created bot checklist comment.");
-  }
-
-  // If ALL tasks are checked in the bot comment (only possible if bot later decides to mark them),
-  // then post final release comment. Right now only Paper/Purpur are auto-ticked, so this will
-  // only fire when you adapt logic to tick the remaining tasks.
-  if (allTasksChecked(desired)) {
-    const alreadyPosted = comments.some((c) => /Amend has been released/i.test(c.body || ""));
-    if (!alreadyPosted) await postFinalReleaseComment(issueNumber);
+  const checklist = comments.find(c => c.body && c.body.includes(CHECKLIST_MARKER));
+  if (checklist && allTasksChecked(checklist.body)) {
+    const already = comments.some(c => /Amend has been released/i.test(c.body || ""));
+    if (!already) await postFinalReleaseComment(issueNumber);
   }
 
   console.log("Done.");
-})().catch((err) => {
+})().catch(err => {
   console.error("❌ Error:", err);
   process.exit(1);
 });
