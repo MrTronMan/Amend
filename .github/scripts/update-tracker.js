@@ -88,7 +88,7 @@ This will help keep track for you of Amend's ${version} release.
 - [ ] Test Amend and Verify
 - [ ] Add Version to Website and other third party plugin distributors
 
-_Last updated: ${ts}_
+_Last updated: ${formatTimestamp()}_
 `;
 }
 
@@ -160,7 +160,7 @@ function buildStatus(version, { paperReady, purpurReady }) {
 - ${paperReady ? "✅" : "❌"} Paper: ${version}
 - ${purpurReady ? "✅" : "❌"} Purpur: ${version}
 
-_${ts}_
+${ts}
 `;
 }
 
@@ -188,7 +188,7 @@ async function resolveIssueNumber() {
     null;
 
   if (!version) {
-    console.log("No version found. Use issue title like '1.21.10 Tracking' or comment '/track 1.21.10'. Exiting.");
+    console.log("No version found. Use issue title like '1.21.11 Tracking' or comment '/track 1.21.11'. Exiting.");
     process.exit(0);
   }
 
