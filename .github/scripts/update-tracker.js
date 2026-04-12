@@ -52,13 +52,13 @@ async function upsertComment(issueNumber, marker, body) {
 }
 
 async function fetchPaperHas(version) {
-  const res = await fetch("https://api.papermc.io/v2/projects/paper");
+  const res = await fetch("https://api.papermc.io/v3/projects/paper");
   if (!res.ok) throw new Error(`Paper API HTTP ${res.status}`);
   const data = await res.json();
   return normalizeCandidates(version).some(v => data.versions.includes(v));
 }
 async function fetchPurpurHas(version) {
-  const res = await fetch("https://api.purpurmc.org/v2/purpur");
+  const res = await fetch("https://api.purpurmc.org/v3/purpur");
   if (!res.ok) throw new Error(`Purpur API HTTP ${res.status}`);
   const data = await res.json();
   return normalizeCandidates(version).some(v => data.versions.includes(v));
