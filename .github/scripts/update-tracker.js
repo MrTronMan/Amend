@@ -61,7 +61,7 @@ async function fetchPaperHas(version) {
   return normalizeCandidates(version).some(v => versions.includes(v));
 }
 async function fetchPurpurHas(version) {
-  const res = await fetch("https://api.purpurmc.org/v3/purpur");
+  const res = await fetch("https://api.purpurmc.org/v2/purpur");
   if (!res.ok) throw new Error(`Purpur API HTTP ${res.status}`);
   const data = await res.json();
   return normalizeCandidates(version).some(v => data.versions.includes(v));
