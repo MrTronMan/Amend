@@ -188,7 +188,7 @@ async function resolveIssueNumber() {
     null;
 
   if (!version) {
-    console.log("No version found. Use issue title like '1.21.11 Tracking' or comment '/track 1.21.11'. Exiting.");
+    console.log("No version found. Use issue title like '26.1.2 Tracking' or comment '/track 26.1.2'. Exiting.");
     process.exit(0);
   }
 
